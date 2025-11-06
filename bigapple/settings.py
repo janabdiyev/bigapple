@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-iysv7j_dp)#_t(60i=hzf^cuqa5ys(9rf5g*^jk6cq$&*$m6m5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # ← Temporarily set to True to see errors
+DEBUG = False
 
 ALLOWED_HOSTS = ['bigapple.onrender.com',
                  'bigapple.pub', 'localhost', '127.0.0.1']
