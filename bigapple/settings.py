@@ -2,14 +2,19 @@
 from pathlib import Path
 import os
 
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-iysv7j_dp)#_t(60i=hzf^cuqa5ys(9rf5g*^jk6cq$&*$m6m5"
 
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['bigapple.onrender.com', 'bigapple.pub', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['bigapple.onrender.com',
+                 'bigapple.pub', 'localhost', '127.0.0.1']
 
+# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -17,7 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "imagekit",
+    "imagekit",        # For auto thumbnails
     "menu",
 ]
 
@@ -52,6 +57,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bigapple.wsgi.application"
 
+# Database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -59,6 +65,7 @@ DATABASES = {
     }
 }
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -66,16 +73,22 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-LANGUAGE_CODE = "tr-tr"
+# Internationalization
+LANGUAGE_CODE = "tr-tr"        # Turkish
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# WhiteNoise - but don't use manifest storage which can break media files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Media files (user uploads)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
