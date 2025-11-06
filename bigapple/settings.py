@@ -11,7 +11,8 @@ SECRET_KEY = "django-insecure-iysv7j_dp)#_t(60i=hzf^cuqa5ys(9rf5g*^jk6cq$&*$m6m5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # ← CHANGED: Set to False for production
 
-ALLOWED_HOSTS = ['bigapple.onrender.com', 'bigapple.pub', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['bigapple.onrender.com',
+                 'bigapple.pub', 'localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
@@ -87,7 +88,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (user uploads)
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = "/var/data/media"  # ← Use the mounted disk path
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
