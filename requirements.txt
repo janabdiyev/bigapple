@@ -1,5 +1,6 @@
+Django
 Pillow==10.4.0
 django-image-cropping==1.1.0
 easy-thumbnails==2.8.2
+django-imagekit
 gunicorn
-Django
