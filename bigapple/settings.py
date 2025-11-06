@@ -86,24 +86,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # WhiteNoise compression
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (user uploads)
+# Media files (user uploads) - Use Render persistent disk
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# Use /var/data for Render persistent disk, fallback to local for development
+if os.path.exists("/var/data"):
+    MEDIA_ROOT = "/var/data/media"
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Logging to see errors
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
