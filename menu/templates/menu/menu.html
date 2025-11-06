@@ -1,0 +1,393 @@
+{% load imagekit %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Apple Pub - Menü</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 16px;
+            line-height: 1.5;
+        }
+
+        .ba-wrap {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* HERO */
+        .ba-hero {
+            position: relative;
+            text-align: center;
+            padding: 24px 16px;
+            background: #004420;
+            border: 2px solid #d4a574;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .ba-hero-inner {
+            display: inline-block;
+            text-align: left;
+        }
+
+        .ba-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 40px;
+            color: #d4a574;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ba-sub {
+            font-size: 20px;
+            color: #ccc;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .ba-logo {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .ba-logo img {
+            height: 70px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        /* CATEGORY BAR */
+        .category-bar {
+            position: sticky;
+            top: 0;
+            background: #1a1a1a;
+            padding: 14px 0;
+            border-bottom: 1px solid #333;
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            z-index: 100;
+            margin-bottom: 24px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .category-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-bar a {
+            color: #d4a574;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            white-space: nowrap;
+            padding: 6px 0;
+        }
+
+        .category-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* MENU */
+        .ba-sec {
+            margin: 24px 0;
+            scroll-margin-top: 90px;
+        }
+
+        .ba-sec h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 26px;
+            color: #d4a574;
+            border-bottom: 2px solid #d4a574;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .ba-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #004420;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .ba-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 165, 116, .15);
+        }
+
+        .ba-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ba-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .ba-desc {
+            font-size: 16px;
+            color: #ccc;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .ba-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #d4a574;
+            margin-left: 12px;
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        /* PRICE SIZES – SAME LINE */
+        .price-sizes {
+            text-align: right;
+            line-height: 1.8;
+            font-size: 17px;
+        }
+
+        .size-price-line {
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .size-qty {
+            color: #ffffff !important;
+            margin-right: 12px;
+            font-size: 16px;
+            display: inline !important;
+        }
+
+        .size-price {
+            color: #d4a574 !important;
+            font-weight: 700;
+        }
+
+        .ba-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-left: 12px;
+            cursor: zoom-in;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+        }
+
+        .ba-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .3s ease;
+        }
+
+        .ba-img:hover img {
+            transform: scale(1.08);
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 32px;
+            padding: 16px 0;
+            border-top: 1px solid #333;
+        }
+
+        @media (min-width: 769px) {
+            .ba-wrap {
+                max-width: 640px;
+            }
+
+            .ba-hero {
+                padding: 32px 20px;
+            }
+
+            .ba-title {
+                font-size: 48px;
+            }
+
+            .ba-sub {
+                font-size: 22px;
+            }
+
+            .ba-sec h2 {
+                font-size: 28px;
+            }
+
+            .ba-name {
+                font-size: 22px;
+            }
+
+            .ba-desc {
+                font-size: 17px;
+            }
+
+            .ba-price {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ba-title {
+                font-size: 34px;
+            }
+
+            .ba-sub {
+                font-size: 18px;
+            }
+
+            .ba-name {
+                font-size: 18px;
+            }
+
+            .ba-desc {
+                font-size: 14px;
+            }
+
+            .ba-price {
+                font-size: 17px;
+            }
+
+            .ba-img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .price-sizes {
+                font-size: 14px;
+            }
+
+            .size-qty {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ba-wrap" id="menu">
+
+        <!-- HERO -->
+        <div class="ba-hero">
+            <div class="ba-hero-inner">
+                <div class="ba-title">Big Apple Pub — Menü</div>
+                <div class="ba-sub">Taze, bol ve sipariş üzerine. Fiyatlar TL'de!</div>
+            </div>
+            <div class="ba-logo">
+                <img src="{% static 'images/logo.png' %}" alt="Big Apple Pub Logo">
+            </div>
+        </div>
+
+        <!-- CATEGORIES -->
+        <nav class="category-bar">
+            {% for cat in categories %}
+            <a href="#cat-{{ cat.pk }}">{{ cat.name }}</a>
+            {% empty %}
+            <span style="color:#666;">Kategori yok</span>
+            {% endfor %}
+        </nav>
+
+        <!-- MENU ITEMS -->
+        {% for cat in categories %}
+        <section class="ba-sec" id="cat-{{ cat.pk }}">
+            <h2>{{ cat.name }}</h2>
+            {% for item in cat.menuitem_set.all %}
+            <div class="ba-item">
+                <div class="ba-item-info">
+                    <div class="ba-name">{{ item.name }}</div>
+                    {% if item.description %}
+                    <div class="ba-desc">{{ item.description|linebreaks }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- PRICE BLOCK – size & price on SAME LINE with ":" -->
+                <div class="ba-price">
+                    {% if item.sizes.exists %}
+                    <div class="price-sizes">
+                        {% for sz in item.sizes.all %}
+                        <div class="size-price-line">
+                            <span class="size-qty">{{ sz.qty|default:"" }}:</span>
+                            <span class="size-price">{{ sz.price|floatformat:0 }} TL</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {% if item.price %}
+                    <strong>{{ item.price|floatformat:0 }} TL</strong>
+                    {% else %}
+                    <span style="color:#999;">–</span>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- IMAGE -->
+                <div class="ba-img">
+                    {% if item.image %}
+                    <a href="{{ item.image.url }}" data-lightbox="menu" data-title="{{ item.name }}">
+                        <img src="{{ item.image_thumbnail.url }}" alt="{{ item.name }}">
+                    </a>
+                    {% else %}
+                    <div
+                        style="width:100%;height:100%;background:#333;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666;">
+                        Resim Yok
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p style="color:#999;font-style:italic;padding:12px 0;">Bu kategoride ürün yok.</p>
+            {% endfor %}
+        </section>
+        {% empty %}
+        <p style="text-align:center;color:#999;margin:40px 0;">Menüde kategori bulunamadı.</p>
+        {% endfor %}
+
+        <div class="footer-note">
+            Tüm fiyatlar TL cinsindendir ve değişebilir. Alerji durumlarınızı lütfen bildirin.
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <script>
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && typeof lightbox !== 'undefined') lightbox.close();
+        });
+    </script>
+</body>
+
+</html>
