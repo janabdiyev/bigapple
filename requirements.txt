@@ -4,3 +4,4 @@ django-image-cropping==1.1.0
 easy-thumbnails==2.8.2
 django-imagekit
 gunicorn
+whitenoise
