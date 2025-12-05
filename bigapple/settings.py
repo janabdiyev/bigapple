@@ -11,8 +11,13 @@ SECRET_KEY = "django-insecure-iysv7j_dp)#_t(60i=hzf^cuqa5ys(9rf5g*^jk6cq$&*$m6m5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['bigapple.onrender.com',
-                 'bigapple.pub', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'bigapple.pub',
+    'www.bigapple.pub',
+    'https://www.bigapple.pub',
+    '216.24.57.1',
+    'bigapple.onrender.com',
+]
 
 # Application definition
 INSTALLED_APPS = [
