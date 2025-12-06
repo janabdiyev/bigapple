@@ -345,6 +345,40 @@
             .subcategory-buttons {
                 grid-template-columns: repeat(3, 1fr);
             }
+
+            /* Stack layout for small screens to prevent overlap */
+            .ba-item {
+                flex-direction: column;
+                align-items: flex-start;
+                position: relative;
+                padding-right: 90px;
+                /* Make room for the image */
+                min-height: 84px;
+                /* Ensure space for image */
+            }
+
+            .ba-item-info {
+                width: 100%;
+                padding-right: 0;
+            }
+
+            .ba-price {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+                text-align: left;
+            }
+
+            .price-sizes {
+                text-align: left;
+            }
+
+            .ba-img {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                margin-left: 0;
+            }
         }
     </style>
 </head>
