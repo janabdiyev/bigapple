@@ -1,6 +1,3 @@
-# Generated migration file for promo feature
-# Save as: menu/migrations/0002_promo_feature.py
-
 from django.db import migrations, models
 import django.db.models.deletion
 
@@ -8,7 +5,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('menu', '0003_menuitem_price'),  # ✅ Correct
+        ('menu', '0003_menuitem_price'),
     ]
 
     operations = [
