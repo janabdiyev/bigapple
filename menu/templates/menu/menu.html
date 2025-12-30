@@ -32,6 +32,120 @@
             margin: 0 auto;
         }
 
+        /* ============= PROMO POPUP STYLES ============= */
+        .promo-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .promo-modal {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .promo-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .promo-close {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 45px;
+            height: 45px;
+            background: #d4a574;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a1a1a;
+            transition: all 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .promo-close:hover {
+            background: #fff;
+            color: #d4a574;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .promo-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #d4a574;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #d4a574;
+        }
+
+        @media (max-width: 768px) {
+            .promo-modal {
+                max-width: 95%;
+            }
+
+            .promo-close {
+                width: 40px;
+                height: 40px;
+                top: -12px;
+                right: -12px;
+                font-size: 20px;
+            }
+
+            .promo-counter {
+                font-size: 12px;
+                padding: 6px 16px;
+                bottom: 15px;
+            }
+        }
+
+        /* ============= EXISTING STYLES ============= */
         /* HERO */
         .ba-hero {
             position: relative;
@@ -47,7 +161,6 @@
             display: inline-block;
             text-align: left;
             margin-left: 10px;
-            /* Add this to move text right */
         }
 
         .ba-title {
@@ -352,9 +465,7 @@
                 align-items: flex-start;
                 position: relative;
                 padding-right: 90px;
-                /* Make room for the image */
                 min-height: 84px;
-                /* Ensure space for image */
             }
 
             .ba-item-info {
@@ -384,6 +495,18 @@
 </head>
 
 <body>
+    <!-- ============= PROMO POPUP ============= -->
+    {% if promo_enabled and promo_images %}
+    <div class="promo-overlay" id="promoOverlay">
+        <div class="promo-modal">
+            <div class="promo-close" onclick="closePromo()" title="Kapat">×</div>
+            <img class="promo-image" id="promoImage" src="" alt="Promosyon">
+            <div class="promo-counter" id="promoCounter"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ============= MAIN MENU ============= -->
     <div class="ba-wrap" id="menu">
 
         <!-- HERO -->
@@ -475,6 +598,70 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+    <!-- ============= PROMO CAROUSEL SCRIPT ============= -->
+    {% if promo_enabled and promo_images %}
+    <script>
+        // Promo images from Django
+        const promoImages = [
+            {% for img in promo_images %}
+        {
+            url: "{{ img.image.url }}",
+                title: "{{ img.title|escapejs }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        ];
+
+        let currentPromoIndex = 0;
+
+        function showPromo(index) {
+            if (index >= 0 && index < promoImages.length) {
+                document.getElementById('promoImage').src = promoImages[index].url;
+                document.getElementById('promoCounter').textContent = `${index + 1} / ${promoImages.length}`;
+            }
+        }
+
+        function closePromo() {
+            currentPromoIndex++;
+
+            if (currentPromoIndex < promoImages.length) {
+                // Show next image
+                showPromo(currentPromoIndex);
+            } else {
+                // All images shown, hide overlay
+                const overlay = document.getElementById('promoOverlay');
+                overlay.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize first promo image on page load
+        if (promoImages.length > 0) {
+            showPromo(0);
+        }
+
+        // Allow ESC key to close promo
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && document.getElementById('promoOverlay').style.display !== 'none') {
+                closePromo();
+            }
+        });
+    </script>
+    {% endif %}
+
+    <!-- ============= MENU FILTERING SCRIPT ============= -->
     <script>
         // Get all category IDs from the page
         const allCategoryIds = Array.from(document.querySelectorAll('[data-category]')).map(el => el.getAttribute('data-category'));
@@ -501,6 +688,7 @@
             button.classList.add('active');
         }
 
+        // Lightbox ESC key handler
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && typeof lightbox !== 'undefined') lightbox.close();
         });

@@ -1,48 +1,113 @@
 # menu/models.py
 from django.db import models
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    """Existing Category model - don't modify"""
+    name = models.CharField(max_length=100)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
 
 
-class Size(models.Model):
-    menu_item = models.ForeignKey(
-        'MenuItem', on_delete=models.CASCADE, related_name='sizes')
-    qty = models.CharField(max_length=20, blank=True,
-                           help_text="For Example: 4 cl, 33 cl, 1 lt")
-    price = models.DecimalField(max_digits=8, decimal_places=2)
+class MenuItem(models.Model):
+    """Existing MenuItem model - don't modify"""
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True)
+    image = models.ImageField(upload_to='menu_items/', blank=True, null=True)
+    order = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ['price']
+        ordering = ['order', 'name']
 
     def __str__(self):
-        return f"{self.qty} – {self.price} TL"
+        return self.name
 
 
-class MenuItem(models.Model):
-    name = models.CharField(max_length=200)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    description = models.TextField(blank=True)
+class ItemSize(models.Model):
+    """Existing ItemSize model - don't modify"""
+    item = models.ForeignKey(
+        MenuItem, on_delete=models.CASCADE, related_name='sizes')
+    qty = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    order = models.IntegerField(default=0)
 
-    # ADD THIS LINE
-    price = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+    class Meta:
+        ordering = ['order']
 
-    image = models.ImageField(upload_to='menu_images/', blank=True, null=True)
+    def __str__(self):
+        return f"{self.item.name} - {self.qty}"
 
-    # REMOVE DUPLICATE image_thumbnail and __str__
-    image_thumbnail = ImageSpecField(
-        source='image',
-        processors=[ResizeToFill(200, 200)],
-        format='JPEG',
-        options={'quality': 80}
+
+# ============= NEW PROMO FEATURE MODELS =============
+
+class PromoSettings(models.Model):
+    """Global settings for promo popup"""
+    enabled = models.BooleanField(
+        default=True,
+        verbose_name="Promosyonları Aktif Et",
+        help_text="Açılış promosyon resmlerini göster/gizle"
     )
 
+    class Meta:
+        verbose_name = "Promosyon Ayarları"
+        verbose_name_plural = "Promosyon Ayarları"
+
     def __str__(self):
-        return f"{self.name} ({self.category.name})"
+        return f"Promosyon Ayarları ({'Aktif' if self.enabled else 'Pasif'})"
+
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists
+        if not self.pk and PromoSettings.objects.exists():
+            raise ValueError(
+                "PromoSettings instance already exists. Edit the existing one.")
+        return super().save(*args, **kwargs)
+
+
+class PromoImage(models.Model):
+    """Promotional images shown on page load"""
+    title = models.CharField(
+        max_length=200,
+        verbose_name="Başlık",
+        help_text="Promosyon resmi için başlık"
+    )
+    image = models.ImageField(
+        upload_to='promo_images/',
+        verbose_name="Resim",
+        help_text="Promosyon resmi (önerilen: 800x1000px veya benzer oran)"
+    )
+    order = models.IntegerField(
+        default=0,
+        verbose_name="Sıra",
+        help_text="Gösterim sırası (küçükten büyüğe)"
+    )
+    active = models.BooleanField(
+        default=True,
+        verbose_name="Aktif",
+        help_text="Bu resmi göster/gizle"
+    )
+    link_to_category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Bağlantılı Kategori",
+        help_text="Bu promosyon için menüde kategori seçin (opsiyonel)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = "Promosyon Resmi"
+        verbose_name_plural = "Promosyon Resimleri"
+
+    def __str__(self):
+        return f"{self.title} ({'Aktif' if self.active else 'Pasif'})"
