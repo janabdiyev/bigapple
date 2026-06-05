@@ -1,25 +1,21 @@
-# bigapple/settings.py
 from pathlib import Path
 import os
 
-# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-iysv7j_dp)#_t(60i=hzf^cuqa5ys(9rf5g*^jk6cq$&*$m6m5"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = [
-    'bigapple.pub',
-    'www.bigapple.pub',
-    'https://www.bigapple.pub',
-    '216.24.57.1',
-    'bigapple.onrender.com',
+    "bigapple.pub",
+    "www.bigapple.pub",
+    "bigapple.onrender.com",
+    "localhost",
+    "127.0.0.1",
+    "*",
 ]
 
-# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -27,7 +23,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "imagekit",        # For auto thumbnails
     "menu",
 ]
 
@@ -62,38 +57,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bigapple.wsgi.application"
 
-# Database
+# Use persistent disk in production, local sqlite in dev
+_PROD_DB = "/var/data/db.sqlite3"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "/var/data/db.sqlite3",
+        "NAME": _PROD_DB if os.path.exists("/var/data") else BASE_DIR / "db.sqlite3",
     }
 }
 
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
-
-# Internationalization
-LANGUAGE_CODE = "tr-tr"        # Turkish
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = "tr-tr"
+TIME_ZONE = "Europe/Istanbul"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-# WhiteNoise - but don't use manifest storage which can break media files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
-# Media files (user uploads)
+# Media: persistent disk in prod, local in dev
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "/var/data/media"
+MEDIA_ROOT = "/var/data/media" if os.path.exists("/var/data") else os.path.join(BASE_DIR, "media")
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
