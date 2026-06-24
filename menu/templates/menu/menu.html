@@ -964,13 +964,7 @@
      SCREEN 1 — LANDING
 ═══════════════════════════════════════════════════════════ -->
 <div class="screen active" id="screen-landing">
-  {% if landing_video %}
-  <div class="landing-video-wrap">
-    <video id="landingVideo" src="{{ landing_video.video.url }}" muted playsinline preload="auto"></video>
-  </div>
-  {% else %}
   <div class="landing-bg-fallback"></div>
-  {% endif %}
 
   <div class="scroll-hint" id="scrollHint">
     <img src="{% static 'images/logo.png' %}" alt="Big Apple Pub" class="scroll-hint-logo" onerror="this.style.display='none'" />
@@ -1339,94 +1333,40 @@
     }
   }
 
-  // ── Landing — page stays FIXED, scroll/swipe drives video ──
+  // ── Landing — show CTA immediately on first scroll/swipe ──
   let landingCleanup = null;
 
   function initLanding() {
-    const cta   = document.getElementById('landingCta');
-    const hint  = document.getElementById('scrollHint');
-    const video = document.getElementById('landingVideo');
+    const cta  = document.getElementById('landingCta');
+    const hint = document.getElementById('scrollHint');
 
     // Lock the page — it must never scroll on the landing screen
     document.body.style.overflow = 'hidden';
     document.body.style.minHeight = '';
     window.scrollTo(0, 0);
 
-    let progress       = 0;      // 0 → 1
-    let revealed       = false;
-    let ticking        = false;
-    let videoUnlocked  = false;  // iOS requires play() before seeking
+    let revealed = false;
 
-    const totalInput = window.innerHeight * 2;
-
-    // ── iOS video unlock ─────────────────────────────────────
-    // iOS Safari blocks video.currentTime until play() is called once
-    // from a user gesture. We call play+pause on first interaction.
-    function unlockVideo() {
-      if (!video || videoUnlocked) return;
-      videoUnlocked = true;
-      video.muted = true;
-      const p = video.play();
-      if (p && p.then) {
-        p.then(() => {
-          video.pause();
-          video.currentTime = 0;
-        }).catch(() => {});
-      }
-    }
-
-    function applyProgress(delta) {
-      unlockVideo(); // unlock on first gesture
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          progress = Math.min(1, Math.max(0, progress + delta / totalInput));
-
-          if (progress > 0.01) {
-            if (hint) hint.classList.add('hidden');
-          } else {
-            if (hint) hint.classList.remove('hidden');
-          }
-
-          // Scrub video
-          if (video && video.readyState >= 1) {
-            try {
-              const target = progress * video.duration;
-              if (Math.abs(video.currentTime - target) > 0.05) {
-                video.currentTime = target;
-              }
-            } catch(e) {}
-          }
-
-          if (progress >= 0.98 && !revealed) {
-            revealed = true;
-            cta.classList.add('visible');
-          }
-
-          ticking = false;
-        });
-        ticking = true;
-      }
+    function reveal() {
+      if (revealed) return;
+      revealed = true;
+      if (hint) hint.classList.add('hidden');
+      cta.classList.add('visible');
     }
 
     // ── Desktop: mouse wheel ─────────────────────────────────
     function onWheel(e) {
       if (currentScreen !== 'landing') return;
-      e.preventDefault();
-      applyProgress(e.deltaY * 0.8);
+      if (e.deltaY > 0) { e.preventDefault(); reveal(); }
     }
 
     // ── Mobile: touch swipe ──────────────────────────────────
     let touchY = 0;
-    function onTouchStart(e) {
-      touchY = e.touches[0].clientY;
-      unlockVideo(); // unlock on touchstart (earliest possible gesture)
-    }
+    function onTouchStart(e) { touchY = e.touches[0].clientY; }
     function onTouchMove(e) {
       if (currentScreen !== 'landing') return;
-      e.preventDefault();
       const delta = touchY - e.touches[0].clientY;
-      touchY = e.touches[0].clientY;
-      applyProgress(delta * 1.5);
+      if (delta > 8) { e.preventDefault(); reveal(); }
     }
 
     document.addEventListener('wheel',      onWheel,      { passive: false });
